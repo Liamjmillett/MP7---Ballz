@@ -59,8 +59,10 @@ public class BallzGame {
                 velocityY = -Math.sqrt((5 * 5) - (velocityX * velocityX));
             }
 
-            Zen.drawText("Horizontal Velocity = " + velocityX, 400, 100);
-            Zen.drawText("Vertical Velocity = " + -velocityY, 400, 120);
+            Zen.drawText("Horizontal Velocity = " + velocityX, 400, 60);
+            Zen.drawText("Vertical Velocity = " + -velocityY, 400, 80);
+            Zen.drawText("Angle (degree) = " +
+                       Math.acos(velocityX / 5) * (180 / Math.PI), 400, 100);
 
             /*
              * Swap the background and foreground buffer, so the shifted image we created above is
