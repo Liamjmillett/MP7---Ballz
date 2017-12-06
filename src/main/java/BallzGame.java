@@ -23,20 +23,16 @@ public class BallzGame {
          */
         double x = 300, y = 450;
         double velocityX = 0;
-        double velocityY = -5;
+        double velocityY = -Math.sqrt((5 * 5) - (velocityX * velocityX)); //velocity of ball is 5
         boolean launched = false;
-
-
         /*
          * handle to arrow image. IN PROGRESS AND NOT FUNCTIONING
          */
-          ClassLoader classLoader = BallzGame.class.getClassLoader();
-            File arrowFile = new File(classLoader.getResource("arrow.png").getFile());
-            Image image = Zen.getCachedImage(arrowFile.getAbsolutePath());
-
+        // ClassLoader classLoader = BallzGame.class.getClassLoader();
+        //    File arrowFile = new File(classLoader.getResource("arrow.png").getFile());
+        //    Image image = Zen.getCachedImage(arrowFile.getAbsolutePath());
 
         while (Zen.isRunning()) {
-
             /*
              * Draw the ball.
              */
@@ -46,28 +42,32 @@ public class BallzGame {
              * Draw Arrow Image    ALSO IN PROGRESS AND NOT FUNCTIONING
              */
            // Zen.drawImage(image, 300, 450);
-            Graphics2D graphicsBuffer = Zen.getBufferGraphics();
-            graphicsBuffer.translate(50, 50);
-            graphicsBuffer.drawImage(image, 0, 0, null);
-
+           // Graphics2D graphicsBuffer = Zen.getBufferGraphics();
+           // graphicsBuffer.translate(50, 50);
+           // graphicsBuffer.drawImage(image, 0, 0, null);
 
             /*
              * Change Ball's direction.
              */
-            if (Zen.isVirtualKeyPressed(KeyEvent.VK_LEFT) && velocityX >= -4.7 && !launched) {
-                velocityX -= 0.2;
+            if (Zen.isVirtualKeyPressed(KeyEvent.VK_LEFT) && velocityX > -4.8 && !launched) {
+                velocityX -= 0.1;
             }
-            if (Zen.isVirtualKeyPressed(KeyEvent.VK_RIGHT) && velocityX <= 4.7 && !launched) {
-                velocityX += 0.2;
+            if (Zen.isVirtualKeyPressed(KeyEvent.VK_RIGHT) && velocityX < 4.8 && !launched) {
+                velocityX += 0.1;
             }
-            velocityY = -Math.sqrt((5 * 5) - (velocityX * velocityX)); //velocity of ball is 5
+            if (!launched) {
+                velocityY = -Math.sqrt((5 * 5) - (velocityX * velocityX));
+            }
+
+            Zen.drawText("Horizontal Velocity = " + velocityX, 400, 100);
+            Zen.drawText("Vertical Velocity = " + -velocityY, 400, 120);
 
             /*
              * Swap the background and foreground buffer, so the shifted image we created above is
              * now visible.
              */
             Zen.flipBuffer();
-            Zen.sleep(30);
+            Zen.sleep(15);
 
             /*
              * Launch the ball.
@@ -75,10 +75,27 @@ public class BallzGame {
             if (Zen.isVirtualKeyPressed(KeyEvent.VK_SPACE)) {
                  launched = true;
             }
-            if (launched == true) {
-            x = x + velocityX;
-            y = y + velocityY;
+            /*
+             * move and bounce off walls.
+             */
+            if (launched) {
+                if (x > Zen.getZenWidth()) {
+                    velocityX *= -1;
+                }
+                if (x < 0) {
+                    velocityX *= -1;
+                }
+                if (y < 0.0) {
+                    velocityY *= -1;
+                }
+                x = x + velocityX;
+                y = y + velocityY;
+
+
             }
+
+
+
 
 
 
