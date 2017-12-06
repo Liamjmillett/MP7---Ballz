@@ -10,6 +10,9 @@ import edu.illinois.cs.cs125.lib.zen.Zen;
  */
 public class BallzGame {
 
+
+
+
     /**
      * A game played by launching a ball. Tap/Press arrow keys to
      *     point to where you will shoot (left/right keys) &
@@ -23,8 +26,11 @@ public class BallzGame {
          */
         double x = 300, y = 450;
         double velocityX = 0;
-        double velocityY = -Math.sqrt((5 * 5) - (velocityX * velocityX)); //velocity of ball is 5
+        double velocityY = -Math.sqrt((5 * 5) - (velocityX * velocityX));
         boolean launched = false;
+        int gameCount = 0;
+
+
         /*
          * handle to arrow image. IN PROGRESS AND NOT FUNCTIONING
          */
@@ -38,6 +44,7 @@ public class BallzGame {
              */
             Zen.fillOval((int) x, (int) y, 8, 8);
 
+
             /*
              * Draw Arrow Image    ALSO IN PROGRESS AND NOT FUNCTIONING
              */
@@ -47,29 +54,32 @@ public class BallzGame {
            // graphicsBuffer.drawImage(image, 0, 0, null);
 
             /*
-             * Change Ball's direction.
+             * Change Ball's direction (by chainging horizontal velocity) before launching.
+             * Ball's velocity is 5.
              */
-            if (Zen.isVirtualKeyPressed(KeyEvent.VK_LEFT) && velocityX > -4.8 && !launched) {
-                velocityX -= 0.1;
-            }
-            if (Zen.isVirtualKeyPressed(KeyEvent.VK_RIGHT) && velocityX < 4.8 && !launched) {
-                velocityX += 0.1;
-            }
             if (!launched) {
+
+                if (Zen.isVirtualKeyPressed(KeyEvent.VK_LEFT) && velocityX > -4.8) {
+                    velocityX -= 0.1;
+                }
+                if (Zen.isVirtualKeyPressed(KeyEvent.VK_RIGHT) && velocityX < 4.8) {
+                    velocityX += 0.1;
+                }
                 velocityY = -Math.sqrt((5 * 5) - (velocityX * velocityX));
             }
+             Zen.drawText("Horizontal Velocity = " + velocityX, 400, 20);
+             Zen.drawText("Vertical Velocity = " + -velocityY, 400, 40);
+             Zen.drawText("Angle (degree) = "
+                       + Math.acos(velocityX / 5) * (180 / Math.PI), 400, 60);
+             Zen.drawText("Balls launched: " + gameCount, 20, 20);
 
-            Zen.drawText("Horizontal Velocity = " + velocityX, 400, 60);
-            Zen.drawText("Vertical Velocity = " + -velocityY, 400, 80);
-            Zen.drawText("Angle (degree) = " +
-                       Math.acos(velocityX / 5) * (180 / Math.PI), 400, 100);
 
             /*
              * Swap the background and foreground buffer, so the shifted image we created above is
              * now visible.
-             */
+            */
             Zen.flipBuffer();
-            Zen.sleep(15);
+            Zen.sleep(5);
 
             /*
              * Launch the ball.
@@ -93,17 +103,16 @@ public class BallzGame {
                 x = x + velocityX;
                 y = y + velocityY;
 
+                if (y >= 450) { //ball crosses lower bound, we launch a new ball.
+                    gameCount++;
+                    launched = false;
+                    y = 450;
+                    velocityX = 0;
+
+                }
+
 
             }
-
-
-
-
-
-
-
-
-
 
         }
     }
