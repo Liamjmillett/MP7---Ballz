@@ -39,11 +39,14 @@ public class BallzGame {
         //    Image image = Zen.getCachedImage(arrowFile.getAbsolutePath());
 
         while (Zen.isRunning()) {
+            Zen.setColor(190, 240, 255);
+            Zen.fillRect(285, 200, 30, 30);
+            Zen.fillRect(0, 460, Zen.getZenWidth(), Zen.getZenHeight());
             /*
              * Draw the ball.
              */
+            Zen.setColor(255, 0, 0);
             Zen.fillOval((int) x, (int) y, 8, 8);
-
 
             /*
              * Draw Arrow Image    ALSO IN PROGRESS AND NOT FUNCTIONING
@@ -67,6 +70,7 @@ public class BallzGame {
                 }
                 velocityY = -Math.sqrt((5 * 5) - (velocityX * velocityX));
             }
+             Zen.setColor(255, 255, 255);
              Zen.drawText("Horizontal Velocity = " + velocityX, 400, 20);
              Zen.drawText("Vertical Velocity = " + -velocityY, 400, 40);
              Zen.drawText("Angle (degree) = "
@@ -108,11 +112,10 @@ public class BallzGame {
                     launched = false;
                     y = 450;
                     velocityX = 0;
-
                 }
-
-
             }
+
+
 
         }
     }
