@@ -30,6 +30,9 @@ public class BallzGame {
         boolean launched = false;
         int gameCount = 0;
 
+        double x2 = 450 * Math.random(); // generate random square.
+        double y2 = 440 * Math.random();
+
 
         /*
          * handle to arrow image. IN PROGRESS AND NOT FUNCTIONING
@@ -39,14 +42,17 @@ public class BallzGame {
         //    Image image = Zen.getCachedImage(arrowFile.getAbsolutePath());
 
         while (Zen.isRunning()) {
-            Zen.setColor(190, 240, 255);
-            Zen.fillRect(285, 200, 30, 30);
-            Zen.fillRect(0, 460, Zen.getZenWidth(), Zen.getZenHeight());
+
+
+            Zen.setColor(190, 240, 255); //blue-green
+            Zen.fillRect((int) x2 + 20, (int) y2 + 20, 40, 40); // box
+            Zen.fillRect(0, 460, Zen.getZenWidth(), Zen.getZenHeight()); //ground
             /*
              * Draw the ball.
              */
-            Zen.setColor(255, 0, 0);
-            Zen.fillOval((int) x, (int) y, 8, 8);
+            Zen.setColor(255, 0, 0); // red
+            Zen.fillOval((int) x, (int) y, 8, 8); //ball
+
 
             /*
              * Draw Arrow Image    ALSO IN PROGRESS AND NOT FUNCTIONING
@@ -113,7 +119,14 @@ public class BallzGame {
                     y = 450;
                     velocityX = 0;
                 }
+                if (x >= x2 && x <= x2 + 40 && y <= y2 && y >= y2 + 40) {
+                    x2 = 350;
+
+                }
+
             }
+
+
 
 
 
