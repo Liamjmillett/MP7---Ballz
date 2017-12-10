@@ -33,13 +33,15 @@ public class BallzGame {
         double x2 = 450 * Math.random(); // generate random square.
         double y2 = 440 * Math.random();
 
+        int xarr = 250;
+        int yarr = 250;
 
         /*
-         * handle to arrow image. IN PROGRESS AND NOT FUNCTIONING
+         * Get the path to our sprite image.
          */
-        // ClassLoader classLoader = BallzGame.class.getClassLoader();
-        //    File arrowFile = new File(classLoader.getResource("arrow.png").getFile());
-        //    Image image = Zen.getCachedImage(arrowFile.getAbsolutePath());
+        ClassLoader classLoader = BallzGame.class.getClassLoader();
+        File arrowFile = new File(classLoader.getResource("arrow.png").getFile());
+        Image image = Zen.getCachedImage(arrowFile.getAbsolutePath());
 
         while (Zen.isRunning()) {
 
@@ -53,14 +55,25 @@ public class BallzGame {
             Zen.setColor(255, 0, 0); // red
             Zen.fillOval((int) x, (int) y, 8, 8); //ball
 
+            /*
+             * Arrow draw
+             */
+            /*
+             * Get a new graphics buffer. Note that this has to be called again every time we flip
+             * buffers.
+             */
+            Graphics2D graphicsBuffer = Zen.getBufferGraphics();
+            graphicsBuffer.translate(xarr, yarr);
+            graphicsBuffer.rotate(1.0, 0, 0);
+            /*
+             * Scale the buffer smallerer.
+             */
+            graphicsBuffer.scale(0.01, 0.04);
 
             /*
-             * Draw Arrow Image    ALSO IN PROGRESS AND NOT FUNCTIONING
+             * Draw our sprite at the current buffer origin.
              */
-           // Zen.drawImage(image, 300, 450);
-           // Graphics2D graphicsBuffer = Zen.getBufferGraphics();
-           // graphicsBuffer.translate(50, 50);
-           // graphicsBuffer.drawImage(image, 0, 0, null);
+            graphicsBuffer.drawImage(image, 0, 0, null);
 
             /*
              * Change Ball's direction (by chainging horizontal velocity) before launching.
