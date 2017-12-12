@@ -3,13 +3,53 @@ import java.io.File;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import edu.illinois.cs.cs125.lib.zen.Zen;
-
+import java.util.Random;
 /**
  * Class to play a game similar to the moile game "Ballz".
  * @author Liam Millett and Nick Miller
  */
 public class BallzGame {
+    public static boolean checkBounce(double x, double y, double vY, double vX, boolean checkEntrance) {
+        for (int i = 0; i < squares.length; i++) {
+            if (squares[i] != null && x > squares[i][0] && x < squares[i][0] + squares[i][2] && y > squares[i][1] && y < squares[i][1] + squares[i][2]) {
+                System.out.println("got here");
+                if(checkEntrance && checkBounce(x - vX*10, y, vX, vY, false)) {
+                    System.out.println("got here y");
+                    velocityX = velocityX * -1;
+                }
+                if(checkEntrance && checkBounce(x, y - vY*10, vX, vY, false)) {
+                    System.out.println("got here x");
+                   velocityY = velocityY * -1;
+                }
+                return true;
+            }
+        }
 
+
+        return false;
+     };
+    public static boolean addSquare(int a, int b, int c, int d) {
+        System.out.println(squares.length);
+        if(numSquares <= 8) {
+            squares[numSquares] = new int [] {a,b,c,d};
+            numSquares += 1;
+            return true;
+        }
+        return false;
+    }
+    public static int numSquares;
+    public static void drawSquares() {
+        for (int i = 0; i < squares.length; i++) {
+            if (squares[i] != null) {
+                Zen.fillRect(squares[i][0],squares[i][1],squares[i][2],squares[i][2]);
+            }
+        }
+    }
+     public static int [][] squares = new int[10][4];
+     static double x = 300, y = 450;
+     static double velocityX = 0;
+     static double velocityY = -Math.sqrt((5 * 5) - (velocityX * velocityX));
+     static boolean launched = false;
 
 
 
@@ -20,21 +60,18 @@ public class BallzGame {
      * @param unused
      */
     public static void main(final String[] unused) {
-
+        Random rand = new Random();
+        for(int i = 0; i < squares.length - 3; i++) {
+            addSquare(rand.nextInt(300), rand.nextInt(300), 40, 1);
+        }
         /*
          * Starting location and current speed of our bouncing ball.
          */
-        double x = 300, y = 450;
-        double velocityX = 0;
-        double velocityY = -Math.sqrt((5 * 5) - (velocityX * velocityX));
-        boolean launched = false;
         int gameCount = 0;
 
         double x2 = 450 * Math.random(); // generate random square.
         double y2 = 440 * Math.random();
 
-        int xarr = 250;
-        int yarr = 250;
 
         /*
          * Get the path to our sprite image.
@@ -54,26 +91,7 @@ public class BallzGame {
              */
             Zen.setColor(255, 0, 0); // red
             Zen.fillOval((int) x, (int) y, 8, 8); //ball
-
-            /*
-             * Arrow draw
-             */
-            /*
-             * Get a new graphics buffer. Note that this has to be called again every time we flip
-             * buffers.
-             */
-            Graphics2D graphicsBuffer = Zen.getBufferGraphics();
-            graphicsBuffer.translate(xarr, yarr);
-            graphicsBuffer.rotate(1.0, 0, 0);
-            /*
-             * Scale the buffer smallerer.
-             */
-            graphicsBuffer.scale(0.01, 0.04);
-
-            /*
-             * Draw our sprite at the current buffer origin.
-             */
-            graphicsBuffer.drawImage(image, 0, 0, null);
+            drawSquares();
 
             /*
              * Change Ball's direction (by chainging horizontal velocity) before launching.
@@ -88,13 +106,35 @@ public class BallzGame {
                     velocityX += 0.1;
                 }
                 velocityY = -Math.sqrt((5 * 5) - (velocityX * velocityX));
+
+                /*
+                 * Arrow draw
+                 * Get a new graphics buffer.
+                 * Note that this has to be called again every time we flip
+                 * buffers.
+                 */
+                Graphics2D graphicsBuffer = Zen.getBufferGraphics();
+                graphicsBuffer.translate(x, 445);
+                graphicsBuffer.rotate(-Math.acos(velocityX / 5), 0, 0);
+                /*
+                 * Scale the buffer smaller.
+                 */
+                graphicsBuffer.scale(0.04, 0.01);
+
+                /*
+                 * Draw our sprite at the current buffer origin.
+                 */
+                graphicsBuffer.drawImage(image, -8, 0, null);
+
+                Zen.setColor(255, 255, 255);
+                Zen.drawText("Horizontal Velocity = " + velocityX, 400, 20);
+                Zen.drawText("Vertical Velocity = " + -velocityY, 400, 40);
+                Zen.drawText("Angle (degree) = "
+                          + Math.acos(velocityX / 5) * (180 / Math.PI), 400, 60);
+                Zen.drawText("Balls launched: " + gameCount, 20, 20);
+
             }
-             Zen.setColor(255, 255, 255);
-             Zen.drawText("Horizontal Velocity = " + velocityX, 400, 20);
-             Zen.drawText("Vertical Velocity = " + -velocityY, 400, 40);
-             Zen.drawText("Angle (degree) = "
-                       + Math.acos(velocityX / 5) * (180 / Math.PI), 400, 60);
-             Zen.drawText("Balls launched: " + gameCount, 20, 20);
+
 
 
             /*
@@ -102,7 +142,7 @@ public class BallzGame {
              * now visible.
             */
             Zen.flipBuffer();
-            Zen.sleep(5);
+            //Zen.sleep(5);
 
             /*
              * Launch the ball.
@@ -123,8 +163,8 @@ public class BallzGame {
                 if (y < 0.0) {
                     velocityY *= -1;
                 }
-                x = x + velocityX;
-                y = y + velocityY;
+                x = x + 0.1*velocityX;
+                y = y + 0.1*velocityY;
 
                 if (y >= 450) { //ball crosses lower bound, we launch a new ball.
                     gameCount++;
@@ -132,10 +172,7 @@ public class BallzGame {
                     y = 450;
                     velocityX = 0;
                 }
-                if (x >= x2 && x <= x2 + 40 && y <= y2 && y >= y2 + 40) {
-                    x2 = 350;
-
-                }
+                checkBounce(x,y,velocityX,velocityY, true);
 
             }
 
