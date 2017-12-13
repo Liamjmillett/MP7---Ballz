@@ -240,8 +240,8 @@ public class BallzGame {
 
             }
             if (gameCount >= 15) {
-                Zen.drawText("GAME OVER", 300, 300);
-                Zen.drawText("Final Score: " + score, 300, 330);
+                Zen.drawText("GAME OVER", Zen.getZenWidth() / 2, Zen.getZenHeight() / 2);
+                Zen.drawText("Final Score: " + score, Zen.getZenWidth() / 2, Zen.getZenHeight() / 2 + 30);
             }
 
 
