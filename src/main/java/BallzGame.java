@@ -12,30 +12,62 @@ public class BallzGame {
     public static boolean checkBounce(double x, double y, double vY, double vX, boolean checkEntrance) {
         for (int i = 0; i < squares.length; i++) {
             if (squares[i] != null && x > squares[i][0] && x < squares[i][0] + squares[i][2] && y > squares[i][1] && y < squares[i][1] + squares[i][2]) {
-                System.out.println("got here");
-                if(checkEntrance && checkBounce(x - vX*10, y, vX, vY, false)) {
-                    System.out.println("got here y");
-                    velocityX = velocityX * -1;
+                double m = .5;
+                while(true) {
+                    boolean withinXRange = false;
+                    boolean withinYRange = false;
+                  //  System.out.println(vX*m);
+                    if(x - vX*m > squares[i][0] && x - vX*m < squares[i][0] + squares[i][2]) {
+                        withinXRange = true;
+                    }
+                    if(y - vY*m > squares[i][1] && y - vY*m < squares[i][1] + squares[i][2]) {
+                        withinYRange = true;
+                    }
+                    if(withinXRange && withinYRange) {
+                        m = m * 1.1;
+                       // System.out.println("increasing multiplier");
+                    } else {
+                        if(withinYRange) {
+                            velocityY = velocityY * -1;
+                            System.out.println("choosing vertical");
+                            squares[i] = null;
+                            return true;
+                        }
+                        if(withinXRange) {
+                            velocityX = velocityX * -1;
+                            System.out.println("choosing horizontal");
+                            squares[i] = null;
+                            return true;
+                        }
+                        if(!withinXRange && !withinYRange) {
+                            velocityX = velocityX * -1;
+                            System.out.println("choosing random");
+                            squares[i] = null;
+                            return true;
+                        }
+                    }
+
                 }
-                if(checkEntrance && checkBounce(x, y - vY*10, vX, vY, false)) {
-                    System.out.println("got here x");
-                   velocityY = velocityY * -1;
-                }
-                return true;
             }
         }
-
-
         return false;
-     };
-    public static boolean addSquare(int a, int b, int c, int d) {
-        System.out.println(squares.length);
-        if(numSquares <= 8) {
-            squares[numSquares] = new int [] {a,b,c,d};
-            numSquares += 1;
+    }
+
+    public static boolean checkGoal(double x, double y, double x2, double y2) {
+        if (x <= (x2 + 30) && x >= x2 && y <= (y2 + 30) && y >= y2) {
             return true;
         }
         return false;
+    }
+
+
+    public static boolean addSquare(int a, int b, int c, int d) {
+        if(numSquares >= 10){
+            return false;
+        }
+        numSquares += 1;
+        squares[numSquares] = new int [] {a,b,c,d};
+        return true;
     }
     public static int numSquares;
     public static void drawSquares() {
@@ -45,7 +77,7 @@ public class BallzGame {
             }
         }
     }
-     public static int [][] squares = new int[10][4];
+     public static int [][] squares = new int[40][4];
      static double x = 300, y = 450;
      static double velocityX = 0;
      static double velocityY = -Math.sqrt((5 * 5) - (velocityX * velocityX));
@@ -59,18 +91,30 @@ public class BallzGame {
      *     use SPACE to shoot.
      * @param unused
      */
-    public static void main(final String[] unused) {
+    public static void addRandomBoxes(int numBox){
+        Random rand = new Random();
+        for(int i = 0; i < numBox; i++) {
+            System.out.println("adding box");
+            addSquare(41 * rand.nextInt(14) + 20, 41 * rand.nextInt(5) + 100, 40, 1);
+        }
+    }
+    public static void main(final String[] unused) { ///MAIN METHOD///
         Random rand = new Random();
         for(int i = 0; i < squares.length - 3; i++) {
-            addSquare(rand.nextInt(300), rand.nextInt(300), 40, 1);
+            addSquare(41 * rand.nextInt(14) + 20, 41 * rand.nextInt(5) + 100, 40, 1);
         }
         /*
          * Starting location and current speed of our bouncing ball.
          */
         int gameCount = 0;
+        int score = 0;
 
         double x2 = 450 * Math.random(); // generate random square.
-        double y2 = 440 * Math.random();
+        double y2 = 40 * Math.random();
+
+        boolean hasHitGoal = false;
+
+
 
 
         /*
@@ -79,18 +123,21 @@ public class BallzGame {
         ClassLoader classLoader = BallzGame.class.getClassLoader();
         File arrowFile = new File(classLoader.getResource("arrow.png").getFile());
         Image image = Zen.getCachedImage(arrowFile.getAbsolutePath());
+        addRandomBoxes(10);
 
         while (Zen.isRunning()) {
 
+            Zen.setColor(255, 255, 255);
+            Zen.drawText(score + " Points  /  " + gameCount + " Attempts", 30, 30);
 
             Zen.setColor(190, 240, 255); //blue-green
-            Zen.fillRect((int) x2 + 20, (int) y2 + 20, 40, 40); // box
+            Zen.fillRect((int) x2 + 20, (int) y2 + 20, 30, 30); // box
             Zen.fillRect(0, 460, Zen.getZenWidth(), Zen.getZenHeight()); //ground
             /*
              * Draw the ball.
              */
             Zen.setColor(255, 0, 0); // red
-            Zen.fillOval((int) x, (int) y, 8, 8); //ball
+            Zen.fillOval((int) x - 4, (int) y - 4, 8, 8); //ball
             drawSquares();
 
             /*
@@ -107,6 +154,8 @@ public class BallzGame {
                 }
                 velocityY = -Math.sqrt((5 * 5) - (velocityX * velocityX));
 
+                Zen.sleep(10);
+
                 /*
                  * Arrow draw
                  * Get a new graphics buffer.
@@ -114,8 +163,8 @@ public class BallzGame {
                  * buffers.
                  */
                 Graphics2D graphicsBuffer = Zen.getBufferGraphics();
-                graphicsBuffer.translate(x, 445);
-                graphicsBuffer.rotate(-Math.acos(velocityX / 5), 0, 0);
+                graphicsBuffer.translate(x - 12, 430);
+                graphicsBuffer.rotate(-Math.acos(velocityX / 5), 12, 4);
                 /*
                  * Scale the buffer smaller.
                  */
@@ -124,14 +173,14 @@ public class BallzGame {
                 /*
                  * Draw our sprite at the current buffer origin.
                  */
-                graphicsBuffer.drawImage(image, -8, 0, null);
+                graphicsBuffer.drawImage(image, 0, 0, null);
 
-                Zen.setColor(255, 255, 255);
-                Zen.drawText("Horizontal Velocity = " + velocityX, 400, 20);
-                Zen.drawText("Vertical Velocity = " + -velocityY, 400, 40);
-                Zen.drawText("Angle (degree) = "
-                          + Math.acos(velocityX / 5) * (180 / Math.PI), 400, 60);
-                Zen.drawText("Balls launched: " + gameCount, 20, 20);
+                //Zen.setColor(255, 255, 255);
+                //Zen.drawText("Horizontal Velocity = " + velocityX, 400, 20);
+                //Zen.drawText("Vertical Velocity = " + -velocityY, 400, 40);
+                //Zen.drawText("Angle (degree) = "
+                  //        + Math.acos(velocityX / 5) * (180 / Math.PI), 400, 60);
+                //Zen.drawText("Balls launched: " + gameCount, 20, 20);
 
             }
 
@@ -142,7 +191,7 @@ public class BallzGame {
              * now visible.
             */
             Zen.flipBuffer();
-            //Zen.sleep(5);
+
 
             /*
              * Launch the ball.
@@ -154,6 +203,7 @@ public class BallzGame {
              * move and bounce off walls.
              */
             if (launched) {
+
                 if (x > Zen.getZenWidth()) {
                     velocityX *= -1;
                 }
@@ -163,8 +213,8 @@ public class BallzGame {
                 if (y < 0.0) {
                     velocityY *= -1;
                 }
-                x = x + 0.1*velocityX;
-                y = y + 0.1*velocityY;
+                x = x + 0.2 * velocityX;
+                y = y + 0.2 * velocityY;
 
                 if (y >= 450) { //ball crosses lower bound, we launch a new ball.
                     gameCount++;
@@ -174,6 +224,24 @@ public class BallzGame {
                 }
                 checkBounce(x,y,velocityX,velocityY, true);
 
+                if (!hasHitGoal) {
+                    hasHitGoal = checkGoal(x, y, x2, y2);
+                }
+
+
+                if (hasHitGoal && !launched) {
+                    score += 1;
+                    numSquares = 0;
+                    addRandomBoxes(10);
+                    x2 = 450 * Math.random();
+                    y2 = 40 * Math.random();
+
+                }
+
+            }
+            if (gameCount >= 15) {
+                Zen.drawText("GAME OVER", 300, 300);
+                Zen.drawText("Final Score: " + score, 300, 330);
             }
 
 
