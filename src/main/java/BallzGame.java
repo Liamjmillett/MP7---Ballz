@@ -118,11 +118,12 @@ public class BallzGame {
 
 
         /*
-         * Get the path to our sprite image.
+         * Get the path to our arrow image.
          */
         ClassLoader classLoader = BallzGame.class.getClassLoader();
         File arrowFile = new File(classLoader.getResource("arrow.png").getFile());
         Image image = Zen.getCachedImage(arrowFile.getAbsolutePath());
+
         addRandomBoxes(10);
 
         while (Zen.isRunning()) {
@@ -222,7 +223,7 @@ public class BallzGame {
                     y = 450;
                     velocityX = 0;
                 }
-                checkBounce(x,y,velocityX,velocityY, true);
+                checkBounce(x, y, velocityX, velocityY, true);
 
                 if (!hasHitGoal) {
                     hasHitGoal = checkGoal(x, y, x2, y2);
@@ -241,7 +242,8 @@ public class BallzGame {
             }
             if (gameCount >= 15) {
                 Zen.drawText("GAME OVER", Zen.getZenWidth() / 2, Zen.getZenHeight() / 2);
-                Zen.drawText("Final Score: " + score, Zen.getZenWidth() / 2, Zen.getZenHeight() / 2 + 30);
+                Zen.drawText("Final Score: " + score,
+                        Zen.getZenWidth() / 2, Zen.getZenHeight() / 2 + 30);
             }
 
 
